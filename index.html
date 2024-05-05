@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,6 @@
 </head>
 
 <body onload="onInit()" oncontextmenu="event.preventDefault()">
-    <audio src="css/img/boom.mp3"></audio>
     <h1>Mine Sweeper 💣</h1>
     <h2></h2>
     <button class="Easy" onclick="onInit()">Easy</button>
@@ -18,17 +17,19 @@
     <button class="Medium" onclick="buildBoard(glevel2)">Medium</button>
 
     <button class="Expert" onclick="buildBoard(glevel3)">Expert</button>
-<div class="conteiner">   
-<button>😃</button>
-    <table class="board-container">
-        <tbody class="board" ></tbody>
-    </table>
+    <div class="conteiner">
+        <button>😃</button>
+        <table class="board-container">
+            <tbody class="board"></tbody>
+        </table>
 
-</div>
+    </div>
 
     <script src="js/utils.js"></script>
     <script src="js/game.js"></script>
-<footer><h2> Yonatan Churaro</h2></footer>
+    <footer>
+        <h2> Yonatan Churaro</h2>
+    </footer>
 </body>
 
 </html>

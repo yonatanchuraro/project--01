@@ -141,6 +141,8 @@ function onRightClick(elCell, i, j) {
 
 // game over function
 function gameIsOver() {
+    const elHeader =document.querySelector('h2')
+    elHeader.innerText='Game Over 😭'
     const elBtn = document.querySelector('.conteiner button')
     var sound = new Audio('js/boom.mp3')
     sound.play()
@@ -166,6 +168,8 @@ function checkGameOver(board) {
 
 // victory function
 function victory() {
-    alert('you won 👑')
+    const elHeader =document.querySelector('h2')
+    elHeader.innerText='You Winn 👑'
     onInit()
+    
 }
