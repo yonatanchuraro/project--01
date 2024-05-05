@@ -3,8 +3,18 @@ const MINE = '💣'
 const EMPTY = ''
 const FLAG = '🚩'
 const size = 4
-const mineCounter = 2
-var flagConter = 0
+ var gLevel1 = {
+    SIZE: 4,
+    MINES: 2
+}
+ var gLevel2 = {
+    SIZE: 8,
+    MINES: 14
+}
+ var gLevel1 = {
+    SIZE: 12,
+    MINES: 32
+}
 var gBoard = buildBoard()
 var gameOver = false
 const elBtn = document.querySelector('.conteiner button')
@@ -12,7 +22,7 @@ const elBtn = document.querySelector('.conteiner button')
 
 // onInit function
 function onInit() {
-    elBtn.innerText='😃'
+    elBtn.innerText = '😃'
     gBoard = buildBoard()
     renderBoard(gBoard)
 }
@@ -36,7 +46,8 @@ function buildBoard() {
     // Then, update the minesAroundCount for cells with mines
     for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
-            if (i === 1 && j === 2 || i === 2 && j === 1) {
+            if ((i === getRandomInt(0, size) && j === getRandomInt(0, size))
+                || i === getRandomInt(0, size) && j === getRandomInt(0, size)) {
                 board[i][j].isMine = true
             } else {
                 board[i][j].minesAroundCount = setMinesNegsCount(board, i, j)
@@ -86,7 +97,6 @@ function setMinesNegsCount(board, rowIdx, collIdx) {
 
 // on cell click function
 function onCellClicked(elCell, i, j) {
-    checkGameOver(gBoard)
     var sound = new Audio('js/click.mp3')
     const cell = gBoard[i][j]
     const negsCounter = setMinesNegsCount(gBoard, i, j)
@@ -112,12 +122,12 @@ function onCellClicked(elCell, i, j) {
             }
         }
     }
+    checkGameOver(gBoard)
 }
 
 
 // on right click function
 function onRightClick(elCell, i, j) {
-    checkGameOver(gBoard)
     var sound = new Audio('js/click.mp3')
     sound.play()
     var cell = gBoard[i][j]
@@ -125,9 +135,8 @@ function onRightClick(elCell, i, j) {
     if (!cell.isMarked) {
         cell.isMarked = true
         elCell.innerText = FLAG
-
     }
-    flagConter++
+    checkGameOver(gBoard)
 }
 
 
@@ -148,7 +157,7 @@ function checkGameOver(board) {
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
             var cells = board[i][j]
-            if (cells.isMarked || cells.isShown) markedCells++
+            if (cells.isMarked && cells.isMine || cells.isShown) markedCells++
         }
     }
     if (allCellsCount === markedCells) victory()
@@ -158,6 +167,6 @@ function checkGameOver(board) {
 
 // victory function
 function victory() {
-    console.log('you won')
-
+    alert('you won 👑')
+    onInit()
 }
