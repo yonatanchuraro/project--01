@@ -3,15 +3,15 @@ const MINE = '💣'
 const EMPTY = ''
 const FLAG = '🚩'
 const size = 4
- var gLevel1 = {
+var gLevel1 = {
     SIZE: 4,
     MINES: 2
 }
- var gLevel2 = {
+var gLevel2 = {
     SIZE: 8,
     MINES: 14
 }
- var gLevel1 = {
+var gLevel1 = {
     SIZE: 12,
     MINES: 32
 }
@@ -46,8 +46,7 @@ function buildBoard() {
     // Then, update the minesAroundCount for cells with mines
     for (var i = 0; i < size; i++) {
         for (var j = 0; j < size; j++) {
-            if ((i === getRandomInt(0, size) && j === getRandomInt(0, size))
-                || i === getRandomInt(0, size) && j === getRandomInt(0, size)) {
+            if ((i === 2 && j === 1 || i === 3 && j === 2)) {
                 board[i][j].isMine = true
             } else {
                 board[i][j].minesAroundCount = setMinesNegsCount(board, i, j)
