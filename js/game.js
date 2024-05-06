@@ -87,7 +87,6 @@ function setMine(gBoard) {
 }
 
 
-
 // render board function
 function renderBoard(board) {
     var strHTML = ''
@@ -119,17 +118,17 @@ function changeLevel(newSize, newMinesCount) {
 }
 
 
-
 // set mines negs count function
 function setMinesNegsCount(board, rowIdx, collIdx) {
     var negsCounter = 0
     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
-        if (i < 0 || i > 3) continue
-
         for (var j = collIdx - 1; j <= collIdx + 1; j++) {
-            if (j < 0 || j > 3) continue
-            if (i === rowIdx && j === collIdx) continue
-            if (board[i][j].isMine === true) negsCounter++
+
+            if (i >= 0 && i < board.length && j >= 0 && j < board[0].length) {
+                if (!(i === rowIdx && j === collIdx) && board[i][j].isMine === true) {
+                    negsCounter++
+                }
+            }
         }
     }
     return negsCounter
@@ -141,25 +140,26 @@ function onCellClicked(elCell, i, j) {
     var sound = new Audio('js/click.mp3')
     const cell = gBoard[i][j]
     const negsCounter = setMinesNegsCount(gBoard, i, j)
-    if (gameOver) {
-        return
-    }
+    if (gameOver) return
+
     sound.play()
     elCell.style.backgroundColor = 'grey'
+
     if (!cell.isShown) {
         cell.isShown = true
 
         if (cell.isMine) {
-            elCell.innerText = MINE
-            lifeCounter--
-            elLife.innerText = `${LIFE}: ${lifeCounter}`
-            if (lifeCounter === 0) {
+            var sound1 = new Audio('js/boom.mp3')
+            sound1.play()
+            mineExplode(elCell)
 
+            if (lifeCounter === 0) {
                 gameOver = true
                 gameIsOver()
                 return
             }
         }
+
         else {
             if (negsCounter === 0) {
                 elCell.innerText = EMPTY
@@ -177,14 +177,17 @@ function onCellClicked(elCell, i, j) {
 
 // on right click function
 function onRightClick(elCell, i, j) {
+    var sound = new Audio('js/click.mp3')
     var elFlagCounter = document.querySelector('.flag')
+    var cell = gBoard[i][j]
+
     elFlagCounter.innerText = `${FLAG}: ${minesCount}`
+
     if (flagCounter <= 0) return
     flagCounter--
-    elFlagCounter.innerText = `${FLAG}${flagCounter}`
-    var sound = new Audio('js/click.mp3')
+    elFlagCounter.innerText = `${FLAG}:${flagCounter}`
     sound.play()
-    var cell = gBoard[i][j]
+
     if (gameOver) return
     if (!cell.isMarked) {
         cell.isMarked = true
@@ -205,14 +208,16 @@ function expandShown(board, elCell, rowIdx, colIdx) {
                 continue
             }
             const cell = board[i][j];
-            const cellElement = document.querySelector(`.cell-${i}-${j}`);
+            const elCells = document.querySelector(`.cell-${i}-${j}`)
+
             if (!cell.isShown && !cell.isMine && !cell.isMarked) {
                 cell.isShown = true;
-                cellElement.style.backgroundColor = 'grey';
+                elCells.style.backgroundColor = 'grey'
+
                 if (cell.minesAroundCount === 0) {
-                    expandShown(board, cellElement, i, j);
+                    expandShown(board, elCells, i, j)
                 } else {
-                    cellElement.innerText = cell.minesAroundCount
+                    elCells.innerText = cell.minesAroundCount
                 }
             }
         }
@@ -222,10 +227,10 @@ function expandShown(board, elCell, rowIdx, colIdx) {
 
 // game over function
 function gameIsOver() {
-    elHeader.innerText = 'Game Over 😭'
-    var sound = new Audio('js/boom.mp3')
+    var sound = new Audio('js/gameover.mp3')
     sound.play()
-    elBtn.innerText = '🥺'
+    elHeader.innerText = 'Game Over 😭'
+    elBtn.innerText = '🤯'
     gStarterInterval = setInterval(onInit, 4000)
 
 }
@@ -251,6 +256,18 @@ function victory() {
     var sound = new Audio('js/win.mp3')
     sound.play()
     elHeader.innerText = 'You Winn 👑'
+    elBtn.innerText = '😎'
     gStarterInterval = setInterval(onInit, 4000)
 
+}
+
+
+// step on mine function
+function mineExplode(elCell) {
+    var sound = new Audio('js/looselife.mp3')
+    sound.play()
+    elCell.innerText = MINE
+    lifeCounter--
+    elLife.innerText = `${LIFE}: ${lifeCounter}`
+    // alert(`oops you steped on mine😭 but you have more${lifeCounter}  lifes`)
 }

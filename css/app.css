@@ -2,16 +2,16 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
   background-color: black;
-  background-image: url(back3.jpg);
+  background-image: url(../css/img/back3.jpg);
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: 100%;
 }
 
 h1 {
-  font-family: 'Orbitron', sans-serif;
+  font-family:fantasy;
   text-align: center;
-  color: white
+  color: white;
 }
 
 h2 {
@@ -29,8 +29,8 @@ h2 {
   border-color: black;
   border-radius: 10%;
   font-size: 1.5em;
-  width: 2em;
-  height: 2em;
+  width: 40px;
+  height: 40px;
   background-color: lightslategrey;
   cursor: pointer;
 
@@ -50,6 +50,7 @@ h2 {
 
 .conteiner button{
   font-size: 30px;
+  background-color: none;
 }
 
 .reveld {
@@ -58,7 +59,7 @@ h2 {
 
 
 button {
-  font-family: 'Press Start 2P', cursive;
+  font-family: fantasy;
   margin-bottom: 7px;
   border: none;
   background-color: rgb(74, 96, 147);
