@@ -12,22 +12,27 @@
 <body onload="onInit()" oncontextmenu="event.preventDefault()">
     <h1>Mine Sweeper 💣</h1>
     <h2></h2>
-    <button class="Easy" onclick="onInit()">Easy</button>
 
-    <button class="Medium" onclick="buildBoard(glevel2)">Medium</button>
+    <button class="Easy" onclick="changeLevel(4,2)">Easy</button>
 
-    <button class="Expert" onclick="buildBoard(glevel3)">Expert</button>
+    <button class="Medium" onclick="changeLevel(8,14)">Medium</button>
+
+    <button class="Expert" onclick="changeLevel(12,32)">Expert</button>
+    <div class="bar">
+        <p><span class="time"></span> <span class="mine"></span> <span class="life"></span> <span class="flag"> </span>
+        </p>
+    </div>
     <div class="conteiner">
-        <button>😃</button>
+        <button onclick="onInit()">😃</button>
         <table class="board-container">
             <tbody class="board"></tbody>
         </table>
-
     </div>
 
     <script src="js/utils.js"></script>
     <script src="js/game.js"></script>
     <footer>
+
         <h2> Yonatan Churaro</h2>
     </footer>
 </body>

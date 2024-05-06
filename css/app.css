@@ -2,17 +2,19 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
   background-color: black;
-  /* background-image: url(/css/img/back5.jpg); */
+  background-image: url(back3.jpg);
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: 100%;
 }
 
 h1 {
+  font-family: 'Orbitron', sans-serif;
   text-align: center;
-  color:white
+  color: white
 }
-h2{
+
+h2 {
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
   color: white;
@@ -34,33 +36,48 @@ h2{
 
 }
 
-.conteiner {
+/* .conteiner {
   margin: auto;
   border: solid 1px;
   border-color: black;
   border-radius: 10%;
-  width: 270px;
-  height: 270px;
+  width: 80%;
+  height: 70%;
+  padding: 15px;
+  padding-bottom: 10px;
   background-color: rgb(74, 96, 147);
+} */
+
+.conteiner button{
+  font-size: 30px;
 }
 
-.reveld{
+.reveld {
   background-color: grey;
 }
 
 
 button {
+  font-family: 'Press Start 2P', cursive;
   margin-bottom: 7px;
   border: none;
   background-color: rgb(74, 96, 147);
   cursor: pointer;
-  border-radius: 10px
-  ;
+  border-radius: 10px;
 }
 
-.Easy,.Medium,.Expert{
-background-color: cadetblue;
+.Easy,
+.Medium,
+.Expert {
+  background-color: cadetblue;
 }
-footer{
+
+footer {
+  color: white;
+  margin-top: 200px;
+}
+
+.bar{
+  text-align: center;
   color: white;
 }
