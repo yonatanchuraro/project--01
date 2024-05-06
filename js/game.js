@@ -268,6 +268,8 @@ function mineExplode(elCell) {
     sound.play()
     elCell.innerText = MINE
     lifeCounter--
+    minesCount--
     elLife.innerText = `${LIFE}: ${lifeCounter}`
+    elMineCounter.innerText = `${MINE}: ${minesCount}`
     // alert(`oops you steped on mine😭 but you have more${lifeCounter}  lifes`)
 }
