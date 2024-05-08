@@ -3,37 +3,45 @@ const MINE = '💣'
 const EMPTY = ''
 const FLAG = '🚩'
 const LIFE = '❤️'
+const CLOCK = '⏱️'
 
-const elHeader = document.querySelector('h2')
 const elBtn = document.querySelector('.conteiner button')
 const elFlagCounter = document.querySelector('.flag')
 const elMineCounter = document.querySelector('.mine')
 const elLife = document.querySelector('.life')
 
+var manualyMineCount = 0
 var size = 4
 var minesCount = 2
-var flagCounter = minesCount
+var flagCounter = 2
 var lifeCounter = 3
 var gStarterInterval
 var gBoard = buildBoard()
 var gameOver = false
-
-
+var isFirstClick
+var isManualy
+var isManualGameRun
 // onInit function
 function onInit() {
-
+    isFirstClick = true
+    isManualy = false
+    isManualGameRun = false
     clearInterval(gStarterInterval)
     elBtn.innerText = '😃'
-    elHeader.innerText = ''
+
 
     // implement the function of the game
     gBoard = buildBoard()
-    setMine(gBoard)
-    renderBoard(gBoard)
+    if (!isManualy) renderBoard(gBoard)
 
     //restet the life/mine/flag counters
+    manualyMineCount = 0
     lifeCounter = 3
+    if (size === 4) minesCount = 2
+    if (size === 8) minesCount = 14
+    if (size === 12) minesCount = 32
     flagCounter = minesCount
+
     gameOver = false
     elFlagCounter.innerText = `${FLAG}: ${minesCount}`
     elMineCounter.innerText = `${MINE}: ${minesCount}`
@@ -69,7 +77,7 @@ function setMine(gBoard) {
         var randJ = getRandomInt(0, gBoard.length)
 
         var cell = gBoard[randI][randJ]
-        if (!cell.isMine) {
+        if (!cell.isMine && !isManualGameRun) {
             cell.isMine = true
             minesPlaced++
             console.log("Mine placed at:", randI, randJ)
@@ -84,6 +92,45 @@ function setMine(gBoard) {
         }
     }
 
+}
+
+
+// set mines manualy function
+function setMinesManualy() {
+    isManualy = true
+    isFirstClick = false
+    alert('your playing in manual mode⚙️  you got 5 second to place your mines')
+}
+
+
+// function manualy game
+function startManualGame() {
+    isManualGameRun = true
+    isManualy = false
+    gameOver = false
+    flagCounter = manualyMineCount
+    minesCount = manualyMineCount
+    lifeCounter = 3
+    elFlagCounter.innerText = `${FLAG}: ${flagCounter}`;
+    elMineCounter.innerText = `${MINE}: ${minesCount}`;
+    elLife.innerText = `${LIFE}: ${lifeCounter}`;
+
+}
+
+
+// hide mines in manual game function
+function hideMinesManualy(elCell) {
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            var cell = gBoard[i][j]
+            if (cell.isMine) {
+                cell.isShown = false
+                elCell.innerText = EMPTY
+                elCell.style.backgroundColor = 'lightslategrey'
+            }
+        }
+    }
+    manualyMineCount++
 }
 
 
@@ -109,10 +156,12 @@ function renderBoard(board) {
 
 
 // change level function
-function changeLevel(newSize, newMinesCount) {
+function changeLevel(newSize) {
     var sound = new Audio('js/butoon.mp3')
     size = newSize
-    minesCount = newMinesCount
+    if (newSize === 4) minesCount = 2
+    if (newSize === 8) minesCount = 14
+    if (newSize === 12) minesCount = 32
     sound.play()
     onInit()
 }
@@ -135,41 +184,63 @@ function setMinesNegsCount(board, rowIdx, collIdx) {
 }
 
 
+// on first click function
+function onFirstClick(elCell) {
+    elCell.style.backgroundColor = 'grey'
+    isFirstClick = false
+    setMine(gBoard)
+}
+
+
 // on cell click function
 function onCellClicked(elCell, i, j) {
     var sound = new Audio('js/click.mp3')
     const cell = gBoard[i][j]
     const negsCounter = setMinesNegsCount(gBoard, i, j)
     if (gameOver) return
+    if (!isManualy) {
+        sound.play()
+        elCell.style.backgroundColor = 'grey'
 
-    sound.play()
-    elCell.style.backgroundColor = 'grey'
-
-    if (!cell.isShown) {
-        cell.isShown = true
-
-        if (cell.isMine) {
-            var sound1 = new Audio('js/boom.mp3')
-            sound1.play()
-            mineExplode(elCell)
-
-            if (lifeCounter === 0) {
-                gameOver = true
-                gameIsOver()
-                return
-            }
+        if (isFirstClick && !cell.isShown) {
+            onFirstClick(elCell)
+            cell.isShown = true
+            return
         }
 
-        else {
-            if (negsCounter === 0) {
-                elCell.innerText = EMPTY
-                expandShown(gBoard, elCell, i, j)
+        if (!cell.isShown) {
+            cell.isShown = true
+
+
+            if (cell.isMine) {
+                mineExplode(elCell)
+
+                if (lifeCounter === 0) {
+                    gameIsOver()
+                    return
+                }
             }
+
             else {
-                elCell.innerText = negsCounter
+                if (negsCounter === 0) {
+                    elCell.innerText = EMPTY
+                    expandShown(gBoard, elCell, i, j)
+                }
+                else {
+                    elCell.innerText = negsCounter
+                }
             }
-
         }
+    }
+    else {
+        cell.isMine = true
+        cell.isShown = true
+        elCell.style.backgroundColor = 'red';
+        elCell.innerText = MINE
+        setTimeout(() => hideMinesManualy(elCell), 5000);
+    }
+    if (manualyMineCount >= 2 && manualyMineCount <= 4) {
+        startManualGame()
     }
     checkGameOver(gBoard)
 }
@@ -184,9 +255,12 @@ function onRightClick(elCell, i, j) {
     elFlagCounter.innerText = `${FLAG}: ${minesCount}`
 
     if (flagCounter <= 0) return
-    flagCounter--
-    elFlagCounter.innerText = `${FLAG}:${flagCounter}`
-    sound.play()
+
+    if (flagCounter > 0 && !cell.isMarked) {
+        flagCounter--
+        elFlagCounter.innerText = `${FLAG}  :  ${flagCounter}`
+        sound.play()
+    }
 
     if (gameOver) return
     if (!cell.isMarked) {
@@ -199,6 +273,7 @@ function onRightClick(elCell, i, j) {
 
 // one safe cell clicked function
 function expandShown(board, elCell, rowIdx, colIdx) {
+    if (isFirstClick) return
     for (let i = rowIdx - 1; i <= rowIdx + 1; i++) {
         for (let j = colIdx - 1; j <= colIdx + 1; j++) {
             if (i < 0 || i >= board.length || j < 0 || j >= board[0].length) {
@@ -225,11 +300,31 @@ function expandShown(board, elCell, rowIdx, colIdx) {
 }
 
 
-// game over function
-function gameIsOver() {
+// revel mines function
+function revelMines() {
     var sound = new Audio('js/gameover.mp3')
     sound.play()
-    elHeader.innerText = 'Game Over 😭'
+
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            var elCell = document.querySelector(`.cell-${i}-${j}`)
+            var cell = gBoard[i][j]
+            if (cell.isMine && !cell.isShown) {
+                cell.isShown = true
+                elCell.style.backgroundColor = 'red'
+                elCell.innerText = MINE
+            }
+        }
+    }
+}
+
+
+// game over function
+function gameIsOver() {
+    gameOver = true
+    revelMines()
+    openModal()
+
     elBtn.innerText = '🤯'
     gStarterInterval = setInterval(onInit, 4000)
 
@@ -255,7 +350,6 @@ function checkGameOver(board) {
 function victory() {
     var sound = new Audio('js/win.mp3')
     sound.play()
-    elHeader.innerText = 'You Winn 👑'
     elBtn.innerText = '😎'
     gStarterInterval = setInterval(onInit, 4000)
 
@@ -264,12 +358,41 @@ function victory() {
 
 // step on mine function
 function mineExplode(elCell) {
-    var sound = new Audio('js/looselife.mp3')
-    sound.play()
+    var sound1 = new Audio('js/boom.mp3')
+    sound1.play()
+    elCell.style.backgroundColor = 'red'
     elCell.innerText = MINE
+
     lifeCounter--
     minesCount--
-    elLife.innerText = `${LIFE}: ${lifeCounter}`
-    elMineCounter.innerText = `${MINE}: ${minesCount}`
+    flagCounter--
+
+    elLife.innerText = `${LIFE} :   ${lifeCounter}`
+    elMineCounter.innerText = `${MINE} :  ${minesCount}`
+    elFlagCounter.innerText = `${FLAG} :  ${flagCounter}`
     // alert(`oops you steped on mine😭 but you have more${lifeCounter}  lifes`)
+}
+
+
+// open modal function
+function openModal() {
+    const elgameOverModal = document.querySelector('.gameover ')
+    const elheading = document.querySelector('.gameover h1')
+    elgameOverModal.style.display = 'block'
+    elheading.innerText = 'Oops!! Game over🥺'
+}
+
+
+// close modal function
+function closeModal() {
+    const elgameOverModal = document.querySelector('.gameover ')
+    elgameOverModal.style.display = 'none'
+}
+
+// dark mode
+function darkMode() {
+    const elBody = document.body
+    const elBtnHead = document.querySelector('.darkMode')
+    elBtnHead.innerText = elBody.classList.contains('darkmode') ? 'Light Mode' : 'Dark Mode';
+    elBody.classList.toggle('darkmode')
 }
