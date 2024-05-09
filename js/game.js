@@ -31,7 +31,7 @@ function onInit() {
     isManualGameRun = false
     clearInterval(gStarterInterval)
     elBtn.innerText = '😃'
-    elHintBtn.innerText = '💡💡💡'
+    elHintBtn.innerText = ' Hints : 💡💡💡'
 
     // implement the function of the game
     gBoard = buildBoard()
@@ -88,7 +88,6 @@ function setMine(gBoard) {
         if (!cell.isMine && !isManualGameRun) {
             cell.isMine = true
             minesPlaced++
-            console.log("Mine placed at:", randI, randJ)
         }
         for (var i = 0; i < gBoard.length; i++) {
             for (var j = 0; j < gBoard[i].length; j++) {
@@ -105,6 +104,9 @@ function setMine(gBoard) {
 
 // set mines manualy function
 function setMinesManualy() {
+    var sound = new Audio('js/manual.mp3')
+
+    sound.play()
     isManualy = true
     isFirstClick = false
     alert('your playing in manual mode⚙️  you got 5 second to place your mines')
@@ -116,12 +118,15 @@ function startManualGame() {
     isManualGameRun = true
     isManualy = false
     gameOver = false
+
     flagCounter = manualyMineCount
     minesCount = manualyMineCount
     lifeCounter = 3
+
     elFlagCounter.innerText = `${FLAG}: ${flagCounter}`;
     elMineCounter.innerText = `${MINE}: ${minesCount}`;
     elLife.innerText = `${LIFE}: ${lifeCounter}`;
+    setMinesNegsCount(gBoard, i, j)
 
 }
 
@@ -154,7 +159,6 @@ function renderBoard(board) {
             strHTML += `<td class="${className}" onclick="onCellClicked(this,${i},${j})"
             oncontextmenu="onRightClick(this,${i},${j})">${EMPTY}</td>`
         }
-
 
         strHTML += '</tr>'
     }
@@ -249,7 +253,7 @@ function onCellClicked(elCell, i, j) {
             elCell.style.backgroundColor = 'red';
             elCell.innerText = MINE
             setTimeout(() => hideMinesManualy(elCell), 5000);
-            setMinesNegsCount(gBoard, i, j)
+
             setTimeout(startManualGame, 7000)
         }
     }
@@ -336,7 +340,6 @@ function gameIsOver() {
     gameOver = true
     revelMines()
     openModal()
-
     elBtn.innerText = '🤯'
     gStarterInterval = setInterval(onInit, 4000)
 
@@ -366,7 +369,6 @@ function victory() {
     elBtn.innerText = '😎'
     openModal()
     gStarterInterval = setInterval(onInit, 4000)
-
 }
 
 
@@ -384,7 +386,6 @@ function mineExplode(elCell) {
     elLife.innerText = `${LIFE} :   ${lifeCounter}`
     elMineCounter.innerText = `${MINE} :  ${minesCount}`
     elFlagCounter.innerText = `${FLAG} :  ${flagCounter}`
-    // alert(`oops you steped on mine😭 but you have more${lifeCounter}  lifes`)
 }
 
 
@@ -392,7 +393,9 @@ function mineExplode(elCell) {
 function openModal() {
     const elgameOverModal = document.querySelector('.gameover ')
     const elheading = document.querySelector('.gameover h1')
+
     elgameOverModal.style.display = 'block'
+
     if (gameOver) elheading.innerText = 'Oops!! Game over🥺'
     else elheading.innerText = 'You won 👑'
     setTimeout(closeModal, 4000)
@@ -407,8 +410,11 @@ function closeModal() {
 
 // dark mode
 function darkMode() {
+    var sound = new Audio('js/manual.mp3')
     const elBody = document.body
     const elBtnHead = document.querySelector('.darkMode')
+
+    sound.play()
     elBtnHead.innerText = elBody.classList.contains('darkmode') ? 'Light Mode' : 'Dark Mode';
     elBody.classList.toggle('darkmode')
 }
@@ -425,20 +431,22 @@ function useHint() {
     if (gameOver) return
 
     if (hintCount <= 0) {
-        elHintBtn.innerText = ''
         alert('No more hints for you😵')
         return
     }
 
+    hintCount--
     if (hintCount === 2) elHintBtn.innerText = '💡💡'
     if (hintCount === 1) elHintBtn.innerText = '💡'
-    hintCount--
+    if (hintCount === 0) elHintBtn.innerText = ''
 
     if (!cell.isShown) {
         sound.play()
         cell.isShown = true
         elCell.style.backgroundColor = 'grey'
+
         setMinesNegsCount(gBoard, randI, randJ)
+
         setTimeout(() => {
             hideHintCell(elCell, randI, randJ)
         }, 3000)
@@ -446,6 +454,7 @@ function useHint() {
         if (cell.isMine) {
             elCell.innerText = MINE
             elCell.style.backgroundColor = 'red'
+
             setTimeout(() => {
                 hideHintCell(elCell, randI, randJ)
             }, 3000)
@@ -458,6 +467,6 @@ function useHint() {
 function hideHintCell(elCell, i, j) {
     var cell = gBoard[i][j]
     cell.isShown = false
-    elCell.style.backgroundColor = 'lightslategrey'
     elCell.innerText = EMPTY
+    elCell.style.backgroundColor = 'lightslategrey'
 }
