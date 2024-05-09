@@ -91,7 +91,7 @@ function setMine(gBoard) {
         }
         for (var i = 0; i < gBoard.length; i++) {
             for (var j = 0; j < gBoard[i].length; j++) {
-                var cell = gBoard[i][j];
+                var cell = gBoard[i][j]
                 if (!cell.isMine) {
                     cell.minesAroundCount = setMinesNegsCount(gBoard, i, j)
                 }
@@ -123,9 +123,9 @@ function startManualGame() {
     minesCount = manualyMineCount
     lifeCounter = 3
 
-    elFlagCounter.innerText = `${FLAG}: ${flagCounter}`;
-    elMineCounter.innerText = `${MINE}: ${minesCount}`;
-    elLife.innerText = `${LIFE}: ${lifeCounter}`;
+    elFlagCounter.innerText = `${FLAG}: ${flagCounter}`
+    elMineCounter.innerText = `${MINE}: ${minesCount}`
+    elLife.innerText = `${LIFE}: ${lifeCounter}`
     setMinesNegsCount(gBoard, i, j)
 
 }
@@ -250,9 +250,9 @@ function onCellClicked(elCell, i, j) {
         if (!cell.isMine) {
             cell.isMine = true
             cell.isShown = true
-            elCell.style.backgroundColor = 'red';
+            elCell.style.backgroundColor = 'red'
             elCell.innerText = MINE
-            setTimeout(() => hideMinesManualy(elCell), 5000);
+            setTimeout(() => hideMinesManualy(elCell), 5000)
 
             setTimeout(startManualGame, 7000)
         }
@@ -298,11 +298,11 @@ function expandShown(board, elCell, rowIdx, colIdx) {
             if (i === rowIdx && j === colIdx) {
                 continue
             }
-            const cell = board[i][j];
+            const cell = board[i][j]
             const elCells = document.querySelector(`.cell-${i}-${j}`)
 
             if (!cell.isShown && !cell.isMine && !cell.isMarked) {
-                cell.isShown = true;
+                cell.isShown = true
                 elCells.style.backgroundColor = 'grey'
 
                 if (cell.minesAroundCount === 0) {
@@ -415,7 +415,7 @@ function darkMode() {
     const elBtnHead = document.querySelector('.darkMode')
 
     sound.play()
-    elBtnHead.innerText = elBody.classList.contains('darkmode') ? 'Light Mode' : 'Dark Mode';
+    elBtnHead.innerText = elBody.classList.contains('darkmode') ? 'Light Mode' : 'Dark Mode'
     elBody.classList.toggle('darkmode')
 }
 
