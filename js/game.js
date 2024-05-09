@@ -3,9 +3,9 @@ const MINE = '💣'
 const EMPTY = ''
 const FLAG = '🚩'
 const LIFE = '❤️'
-const CLOCK = '⏱️'
 
 const elBtn = document.querySelector('.conteiner button')
+const elHintBtn = document.querySelector('.hint')
 const elFlagCounter = document.querySelector('.flag')
 const elMineCounter = document.querySelector('.mine')
 const elLife = document.querySelector('.life')
@@ -15,12 +15,15 @@ var size = 4
 var minesCount = 2
 var flagCounter = 2
 var lifeCounter = 3
+var hintCount
 var gStarterInterval
 var gBoard = buildBoard()
 var gameOver = false
 var isFirstClick
 var isManualy
 var isManualGameRun
+
+
 // onInit function
 function onInit() {
     isFirstClick = true
@@ -28,7 +31,7 @@ function onInit() {
     isManualGameRun = false
     clearInterval(gStarterInterval)
     elBtn.innerText = '😃'
-
+    elHintBtn.innerText = '💡💡💡'
 
     // implement the function of the game
     gBoard = buildBoard()
@@ -37,7 +40,12 @@ function onInit() {
     //restet the life/mine/flag counters
     manualyMineCount = 0
     lifeCounter = 3
-    if (size === 4) minesCount = 2
+    hintCount = 3
+    if (size === 4) {
+        minesCount = 2
+        lifeCounter = 2
+    }
+
     if (size === 8) minesCount = 14
     if (size === 12) minesCount = 32
     flagCounter = minesCount
@@ -189,6 +197,7 @@ function onFirstClick(elCell) {
     elCell.style.backgroundColor = 'grey'
     isFirstClick = false
     setMine(gBoard)
+    return
 }
 
 
@@ -198,6 +207,7 @@ function onCellClicked(elCell, i, j) {
     const cell = gBoard[i][j]
     const negsCounter = setMinesNegsCount(gBoard, i, j)
     if (gameOver) return
+
     if (!isManualy) {
         sound.play()
         elCell.style.backgroundColor = 'grey'
@@ -208,9 +218,9 @@ function onCellClicked(elCell, i, j) {
             return
         }
 
+
         if (!cell.isShown) {
             cell.isShown = true
-
 
             if (cell.isMine) {
                 mineExplode(elCell)
@@ -233,14 +243,15 @@ function onCellClicked(elCell, i, j) {
         }
     }
     else {
-        cell.isMine = true
-        cell.isShown = true
-        elCell.style.backgroundColor = 'red';
-        elCell.innerText = MINE
-        setTimeout(() => hideMinesManualy(elCell), 5000);
-    }
-    if (manualyMineCount >= 2 && manualyMineCount <= 4) {
-        startManualGame()
+        if (!cell.isMine) {
+            cell.isMine = true
+            cell.isShown = true
+            elCell.style.backgroundColor = 'red';
+            elCell.innerText = MINE
+            setTimeout(() => hideMinesManualy(elCell), 5000);
+            setMinesNegsCount(gBoard, i, j)
+            setTimeout(startManualGame, 7000)
+        }
     }
     checkGameOver(gBoard)
 }
@@ -274,6 +285,7 @@ function onRightClick(elCell, i, j) {
 // one safe cell clicked function
 function expandShown(board, elCell, rowIdx, colIdx) {
     if (isFirstClick) return
+
     for (let i = rowIdx - 1; i <= rowIdx + 1; i++) {
         for (let j = colIdx - 1; j <= colIdx + 1; j++) {
             if (i < 0 || i >= board.length || j < 0 || j >= board[0].length) {
@@ -348,9 +360,11 @@ function checkGameOver(board) {
 
 // victory function
 function victory() {
+    const elheading = document.querySelector('.gameover h1')
     var sound = new Audio('js/win.mp3')
     sound.play()
     elBtn.innerText = '😎'
+    openModal()
     gStarterInterval = setInterval(onInit, 4000)
 
 }
@@ -379,7 +393,9 @@ function openModal() {
     const elgameOverModal = document.querySelector('.gameover ')
     const elheading = document.querySelector('.gameover h1')
     elgameOverModal.style.display = 'block'
-    elheading.innerText = 'Oops!! Game over🥺'
+    if (gameOver) elheading.innerText = 'Oops!! Game over🥺'
+    else elheading.innerText = 'You won 👑'
+    setTimeout(closeModal, 4000)
 }
 
 
@@ -395,4 +411,53 @@ function darkMode() {
     const elBtnHead = document.querySelector('.darkMode')
     elBtnHead.innerText = elBody.classList.contains('darkmode') ? 'Light Mode' : 'Dark Mode';
     elBody.classList.toggle('darkmode')
+}
+
+
+// use hint function
+function useHint() {
+    var randI = getRandomInt(0, gBoard.length)
+    var randJ = getRandomInt(0, gBoard.length)
+    var cell = gBoard[randI][randJ]
+    var elCell = document.querySelector(`.cell-${randI}-${randJ}`)
+    var sound = new Audio('js/hint.mp3')
+
+    if (gameOver) return
+
+    if (hintCount <= 0) {
+        elHintBtn.innerText = ''
+        alert('No more hints for you😵')
+        return
+    }
+
+    if (hintCount === 2) elHintBtn.innerText = '💡💡'
+    if (hintCount === 1) elHintBtn.innerText = '💡'
+    hintCount--
+
+    if (!cell.isShown) {
+        sound.play()
+        cell.isShown = true
+        elCell.style.backgroundColor = 'grey'
+        setMinesNegsCount(gBoard, randI, randJ)
+        setTimeout(() => {
+            hideHintCell(elCell, randI, randJ)
+        }, 3000)
+
+        if (cell.isMine) {
+            elCell.innerText = MINE
+            elCell.style.backgroundColor = 'red'
+            setTimeout(() => {
+                hideHintCell(elCell, randI, randJ)
+            }, 3000)
+        }
+    }
+}
+
+
+// hide hint cell function
+function hideHintCell(elCell, i, j) {
+    var cell = gBoard[i][j]
+    cell.isShown = false
+    elCell.style.backgroundColor = 'lightslategrey'
+    elCell.innerText = EMPTY
 }
